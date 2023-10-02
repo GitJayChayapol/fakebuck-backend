@@ -4,15 +4,23 @@ import Layout from '../layout/Layout';
 import HomePage from '../pages/HomePage';
 import FriendPage from '../pages/FriendPage';
 import ProfilePage from '../pages/ProfilePage';
+import RedirectIfauthenticated from '../features/auth/RedirectIfAuthenticated';
+import Authenticated from '../features/auth/Authenticated';
+
 
 const router = createBrowserRouter ([
     {
         path: '/login',
-        element: <LoginPage/>
+        element: (<RedirectIfauthenticated>
+                <LoginPage/>
+            </RedirectIfauthenticated>)
     },
     {
         path: '/',
-        element: <Layout/>,
+        element: (
+        <Authenticated>
+            <Layout/>
+        </Authenticated>),
         children: [
             { path: '', element: <HomePage/> },
             { path: 'friend', element: <FriendPage/> },

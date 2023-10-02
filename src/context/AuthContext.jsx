@@ -1,11 +1,25 @@
-import { createContext , useState } from "react";
+import { createContext , useEffect, useState } from "react";
 import axios from '../config/axios'
-import { addAccessToken } from "../utils/local-storane";
+import { addAccessToken, getAccessToken } from "../utils/local-storane";
 
 export const Authcontext = createContext()
 
 export default function AuthcontextProvider({children}) {
-    const [ authUser, setAuthUser ] = useState({})
+    const [ authUser, setAuthUser ] = useState(null)
+    const [initialLoading,setInitialLoading] = useState(true)
+
+    useEffect(()=>{
+        if(getAccessToken()) {
+            axios.get('/auth/me').then(res => {
+                setAuthUser(res.data.user)
+            })
+            .finally(()=>{
+                setInitialLoading(false)
+            }); 
+        } else {
+            setInitialLoading(false)
+        }
+        }, [])
 
     const login = async credential => {
         try{
@@ -16,7 +30,7 @@ export default function AuthcontextProvider({children}) {
             console.log(err)
         }
     }
-    return <Authcontext.Provider value={{ login }}>{children}</Authcontext.Provider>
+    return <Authcontext.Provider value={{ login,authUser,initialLoading }}>{children}</Authcontext.Provider>
 }
 
 
